@@ -3,7 +3,7 @@
 
 #include <asm/syscall.h>
 
-#define KSUD_PATH "/data/adb/ksud"
+#define KSUD_PATH "/data/adb/fcsud"
 
 void ksu_ksud_init();
 void ksu_ksud_exit();
