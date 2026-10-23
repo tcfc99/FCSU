@@ -60,7 +60,7 @@ jobs:
       key_password: ${{ steps.gen.outputs.key_password }}
     steps:
       - name: Generate temporary keystore
-        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/fcsu-branding-work'
         id: gen
         run: |
           KEYSTORE_PASSWORD=$(openssl rand -hex 32)
@@ -204,11 +204,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Configure custom branding
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/fcsu-branding-work'
         env:
           APP_NAME: ${{ inputs.app_name }}
           PACKAGE_NAME: ${{ inputs.package_name }}
         run: |
+          APP_NAME="${APP_NAME:-FCSU}"
+          PACKAGE_NAME="${PACKAGE_NAME:-me.tcfc.fcsu}"
           if [ -z "$APP_NAME" ]; then
             echo "::error::App name must not be empty."
             exit 1
@@ -228,7 +230,7 @@ jobs:
           fi
 
       - name: Upload build artifact
-        if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || (github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')) || github.ref_type == 'tag' }}
+        if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/fcsu-branding-work' || (github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')) || github.ref_type == 'tag' }}
         uses: actions/upload-artifact@v7
         with:
           name: manager-gradle
